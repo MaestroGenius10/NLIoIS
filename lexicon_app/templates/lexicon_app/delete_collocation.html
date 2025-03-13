@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Collocation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Delete Collocation</h1>
+    <p>Вы действительно хотите удалить данное сочетание?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="button">Удалить</button>
+    </form>
+    <a href="{% url 'view_dictionary' %}">
+        <button class="button" style="background-color: #007BFF;">Назад</button>
+    </a>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lexicon App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5em;
+            color: #007BFF;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .search-form input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .dropdown {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            max-height: 150px;
+            overflow-y: auto;
+            width: 100%;
+        }
+        .dropdown.show {
+            display: block;
+        }
+        .dropdown label {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .dropdown label:hover {
+            background-color: #f0f0f0;
+        }
+        .file-input {
+            margin-top: 20px;
+        }
+        .file-input input[type="file"] {
+            display: none;
+        }
+        .file-input .upload-button {
+            padding: 12px 24px;
+            background-color: #28a745;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .file-input .upload-button:hover {
+            background-color: #218838;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Lexicon App</h1>
+
+        <!-- Кнопка для загрузки файла -->
+        <div class="file-input">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="upload-button" for="file-upload">Загрузить файл</label>
+                <input type="file" id="file-upload" name="file" accept=".txt,.rtf" required onchange="displayFileName()">
+                <button type="submit" class="button">Найти словосочетания в файле</button>
+            </form>
+            <div class="file-name" id="file-name"></div>
+        </div>
+
+        <!-- Форма для поиска словосочетаний -->
+        <form class="search-form" method="get" action="{% url 'search_collocations' %}">
+            <input type="text" name="word" placeholder="Введите слово для поиска" required>
+            <button type="button" class="button" onclick="toggleDropdown()">Выберите тип(ы) словосочетаний</button>
+            <div class="dropdown" id="dropdown">
+                <label><input type="checkbox" name="collocation_types" value="noun_adjective"> Noun + Adjective</label>
+                <label><input type="checkbox" name="collocation_types" value="noun_preposition"> Noun + Preposition</label>
+                <label><input type="checkbox" name="collocation_types" value="noun_verb"> Noun + Verb</label>
+                <label><input type="checkbox" name="collocation_types" value="verb_adverb"> Verb + Adverb</label>
+                <label><input type="checkbox" name="collocation_types" value="verb_noun"> Verb + Noun</label>
+                <label><input type="checkbox" name="collocation_types" value="verb_pronoun"> Verb + Pronoun</label>
+                <label><input type="checkbox" name="collocation_types" value="verb_preposition"> Verb + Preposition</label>
+                <label><input type="checkbox" name="collocation_types" value="adjective_noun"> Adjective + Noun</label>
+                <label><input type="checkbox" name="collocation_types" value="adjective_adverb"> Adjective + Adverb</label>
+                <label><input type="checkbox" name="collocation_types" value="adjective_preposition"> Adjective + Preposition</label>
+                <label><input type="checkbox" name="collocation_types" value="adverb_verb"> Adverb + Verb</label>
+                <label><input type="checkbox" name="collocation_types" value="adverb_adjective"> Adverb + Adjective</label>
+                <label><input type="checkbox" name="collocation_types" value="adverb_adverb"> Adverb + Adverb</label>
+                <label><input type="checkbox" name="collocation_types" value="pronoun_verb"> Pronoun + Verb</label>
+                <label><input type="checkbox" name="collocation_types" value="pronoun_preposition"> Pronoun + Preposition</label>
+                <label><input type="checkbox" name="collocation_types" value="preposition_noun"> Preposition + Noun</label>
+                <label><input type="checkbox" name="collocation_types" value="preposition_pronoun"> Preposition + Pronoun</label>
+                <label><input type="checkbox" name="collocation_types" value="preposition_verb"> Preposition + Verb</label>
+                <label><input type="checkbox" name="collocation_types" value="numeral_noun"> Numeral + Noun</label>
+            </div>
+            <button type="submit" class="button">Найти словосочетания со словом</button>
+        </form>
+
+        <!-- Кнопка "Помощь" -->
+        <button class="button" onclick="showHelp()">Помощь</button>
+
+        <!-- Кнопка "Просмотреть словарь" -->
+        <a href="{% url 'view_dictionary' %}">
+            <button class="button">Просмотреть словарь</button>
+        </a>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            var dropdown = document.getElementById('dropdown');
+            if (!event.target.matches('.button') && !event.target.closest('.dropdown')) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        function showHelp() {
+            alert("Это приложение для работы со словосочетаниями. Вы можете загружать текстовые файлы в формате rtf и txt. Также вы можете сохранить результаты поиска в словарь, после чего можно просмотреть словарь и редактировать его. Вы можете найти словосочетания с интересующим Вас словом или интересующего типа (например, 'наречие + глагол').");
+        }
+
+        function displayFileName() {
+            var input = document.getElementById('file-upload');
+            var fileNameDisplay = document.getElementById('file-name');
+            if (input.files.length > 0) {
+                fileNameDisplay.textContent = "Загруженный файл: " + input.files[0].name;
+            }
+        }
+    </script>
+</body>
+</html>

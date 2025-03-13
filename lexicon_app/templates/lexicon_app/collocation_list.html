@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collocations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .collocation-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .collocation-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .collocation-item h3 {
+            margin-top: 0;
+        }
+        .collocation-item p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Collocations</h1>
+    <form method="post" action="{% url 'save_collocations' %}">
+        {% csrf_token %}
+        <ul class="collocation-list">
+            {% for word, pairs in collocations.items %}
+                <li class="collocation-item">
+                    <h3>{{ word }}({{ pairs.0.4 }})</h3>
+                    <p><strong>Can be collocated with:</strong></p>
+                    <ul>
+                        {% for word2, pos2, collocation, collocation_type, pos1 in pairs %}
+                            <li>{{ word2 }}({{ pos2 }})</li>
+                        {% endfor %}
+                    </ul>
+                    <p><strong>Collocations:</strong></p>
+                    <ul>
+                        {% for word2, pos2, collocation, collocation_type, pos1 in pairs %}
+                            <li>{{ collocation }} ({{ collocation_type }})</li>
+                            <input type="hidden" name="collocations" value="{{ collocation }}">
+                            <input type="hidden" name="collocation_types" value="{{ collocation_type }}">
+                            <input type="hidden" name="words1" value="{{ word }}">
+                            <input type="hidden" name="pos1" value="{{ pos1 }}">
+                            <input type="hidden" name="words2" value="{{ word2 }}">
+                            <input type="hidden" name="pos2" value="{{ pos2 }}">
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit" class="button">Сохранить</button>
+    </form>
+    <a href="{% url 'index' %}">
+        <button class="button">Назад</button>
+    </a>
+</body>
+</html>

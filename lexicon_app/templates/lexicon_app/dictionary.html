@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dictionary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .collocation-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .collocation-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .collocation-item h3 {
+            margin-top: 0;
+        }
+        .collocation-item p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .button-edit {
+            background-color: #28a745;
+        }
+        .button-edit:hover {
+            background-color: #218838;
+        }
+        .button-delete {
+            background-color: #dc3545;
+        }
+        .button-delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dictionary</h1>
+    <ul class="collocation-list">
+        {% for word, pairs in collocations.items %}
+            <li class="collocation-item">
+                <h3>{{ word }}({{ pairs.0.4 }})</h3>
+                <p><strong>Can be collocated with:</strong></p>
+                <ul>
+                    {% for word2, pos2, collocation, collocation_type, pos1, collocation_id in pairs %}
+                        <li>{{ word2 }}({{ pos2 }})</li>
+                    {% endfor %}
+                </ul>
+                <p><strong>Collocations:</strong></p>
+                <ul>
+                    {% for word2, pos2, collocation, collocation_type, pos1, collocation_id in pairs %}
+                        <li>
+                            {{ collocation }} ({{ collocation_type }})
+                            <a href="{% url 'edit_collocation' collocation_id %}">
+                                <button class="button button-edit">Редактировать</button>
+                            </a>
+                            <a href="{% url 'delete_collocation' collocation_id %}">
+                                <button class="button button-delete">Удалить</button>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'index' %}">
+        <button class="button">Назад</button>
+    </a>
+</body>
+</html>
