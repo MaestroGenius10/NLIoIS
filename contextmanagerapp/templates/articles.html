@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статьи и статистика</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .meta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .meta-info p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Статистика по частям речи</h1>
+
+        <h2>Общая статистика по корпусу</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Часть речи</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pos, count in total_stats.items %}
+                    <tr>
+                        <td>{{ pos }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Статистика по статьям</h2>
+        {% for article_stat in articles_stats %}
+            <div class="meta-info">
+                <h3>{{ article_stat.article.title }}</h3>
+                <p><strong>Автор:</strong> {{ article_stat.article.author }}</p>
+                <p><strong>Дата:</strong> {{ article_stat.article.date|date:"Y-m-d H:i" }}</p>
+                <p><strong>Вид спорта:</strong> {{ article_stat.article.sport }}</p>
+                <a href="{% url 'view_article_text' article_stat.article.id %}" class="button">Просмотреть текст статьи</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Часть речи</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pos, count in article_stat.pos_stats.items %}
+                        <tr>
+                            <td>{{ pos }}</td>
+                            <td>{{ count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+</body>
+</html>

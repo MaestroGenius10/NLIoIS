@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты анализа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .button {
+            display: block;
+            width: max-content;
+            margin: 20px auto;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .metadata, .result {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .word-entry {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .word-entry:last-child {
+            border-bottom: none;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Результаты анализа</h1>
+
+        <form method="POST" action="{% url 'save_analysis' %}">
+            {% csrf_token %}
+            {% for article in articles_data %}
+                <div class="metadata">
+                    <h2>Метаданные</h2>
+                    <p><strong>Название:</strong> {{ article.metadata.title }}</p>
+                    <p><strong>Автор:</strong> {{ article.metadata.authors }}</p>
+                    <p><strong>Дата:</strong> {{ article.metadata.date }}</p>
+                    <p><strong>Спорт:</strong> {{ article.metadata.sport }}</p>
+                </div>
+
+                <div class="result">
+                    <h2>Анализ текста</h2>
+                    {% for data in article.word_analysis %}
+                        <div class="word-entry">
+                            <p><strong>{{ data.word }}</strong> ({{ data.pos }})</p>
+                            <p>Количество: {{ data.count }}</p>
+                            <p>Морфология: {{ data.morph }}</p>
+                            <p>Лемма: {{ data.lemma }}</p>
+                            {% if data.sentences %}
+                                <p><strong>Конкорданс:</strong></p>
+                                <ul>
+                                    {% for sentence in data.sentences %}
+                                        <li>{{ sentence }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="button">Сохранить результаты</button>
+        </form>
+
+        <a href="{% url 'index' %}" class="button">Вернуться назад</a>
+    </div>
+</body>
+</html>

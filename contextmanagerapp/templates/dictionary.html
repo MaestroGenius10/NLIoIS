@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Словарь</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .button {
+            display: block;
+            width: max-content;
+            margin: 20px auto;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .word-entry {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .word-entry:last-child {
+            border-bottom: none;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Словарь</h1>
+
+        {% for lemma, data in dictionary %}
+            <div class="word-entry">
+                <p><strong>{{ lemma }}</strong></p>
+                <p><strong>Части речи:</strong> {{ data.pos|join:", " }}</p>
+                <p><strong>Количество вхождений:</strong> {{ data.count }}</p>
+                <p><strong>Морфология:</strong> {{ data.morphology|join:", " }}</p>
+                <p><strong>Лемма: {{ lemma }}</strong></p>  <!-- Отображаем лемму -->
+                <p><strong>Конкорданс:</strong></p>
+                <ul>
+                    {% for sentence in data.sentences %}
+                        <li>{{ sentence }}</li>
+                    {% endfor %}
+                </ul>
+            <a href="{% url 'edit_word' word_id=data.id %}" class="button">Редактировать</a>
+            </div>
+        {% endfor %}
+
+        <a href="{% url 'index' %}" class="button">Вернуться назад</a>
+    </div>
+</body>
+</html>

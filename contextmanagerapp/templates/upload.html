@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корпусный менеджер - Загрузка файла</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .search-form {
+            margin-top: 20px;
+        }
+        .search-form input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 60%;
+            margin-right: 10px;
+        }
+        .search-form .button {
+            width: 30%;
+        }
+        .file-input input[type="file"] {
+            display: none;
+        }
+        .file-input .upload-button {
+            padding: 12px 24px;
+            background-color: #28a745;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .file-input .upload-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать в корпусный менеджер</h1>
+
+        <!-- Кнопка для загрузки файла -->
+        <div class="file-input">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="upload-button" for="file-upload">Загрузить файл</label>
+                <input type="file" id="file-upload" name="file" accept=".txt,.pdf,.doc,.docx" required onchange="displayFileName()">
+                <button type="submit" class="button">Анализировать</button>
+            </form>
+            <div class="file-name" id="file-name">{% if file_name %}Загруженный файл: {{ file_name }}{% endif %}</div>
+        </div>
+
+        <!-- Форма для поиска по слову -->
+        <div class="search-form">
+            <h3>Поиск по слову</h3>
+            <form method="GET" action="{% url 'search_word' %}">
+                <input type="text" name="word" placeholder="Введите слово" required>
+                <button type="submit" class="button">Найти слово</button>
+            </form>
+        </div>
+
+        <!-- Форма для поиска по фразе -->
+        <div class="search-form">
+            <h3>Поиск по фразе</h3>
+            <form method="GET" action="{% url 'search_phrase' %}">
+                <input type="text" name="phrase" placeholder="Введите фразу" required>
+                <button type="submit" class="button">Найти фразу</button>
+            </form>
+        </div>
+
+        <!-- Кнопка для просмотра словаря -->
+        <div class="button-container">
+            <a href="{% url 'view_dictionary' %}" class="button">Просмотреть словарь</a>
+        </div>
+        <div class="button-container">
+            <a href="{% url 'view_articles' %}" class="button">Просмотреть статьи и статистику</a>
+        </div>
+
+        <!-- Кнопка "Помощь" -->
+        <button class="button" onclick="showHelp()">Помощь</button>
+    </div>
+
+    <script>
+        function displayFileName() {
+            var input = document.getElementById('file-upload');
+            var fileNameDisplay = document.getElementById('file-name');
+            if (input.files.length > 0) {
+                fileNameDisplay.textContent = "Загруженный файл: " + input.files[0].name;
+            }
+        }
+
+        function showHelp() {
+            alert("Добро пожаловать в Корпусный менеджер! Здесь вы можете загружать текстовые файлы в формате TXT, PDF, DOC или DOCX для анализа. Вы можете искать слова и фразы в загруженных статьях, а также просматривать собранный словарь и статистику по статьям.");
+        }
+    </script>
+</body>
+</html>

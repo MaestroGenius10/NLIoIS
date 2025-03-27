@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование слова</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Редактирование слова: {{ word.word }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="word">Слово:</label>
+                <input type="text" id="word" name="word" value="{{ word.word }}" required>
+            </div>
+            <div class="form-group">
+                <label for="lemma">Лемма:</label>
+                <input type="text" id="lemma" name="lemma" value="{{ word.lemma }}" required>
+            </div>
+            <div class="form-group">
+                <label for="pos">Часть речи:</label>
+                <input type="text" id="pos" name="pos" value="{{ word.pos }}" required>
+            </div>
+            <div class="form-group">
+                <label for="morphology">Морфология:</label>
+                <textarea id="morphology" name="morphology">{{ word.morphology }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="count">Количество:</label>
+                <input type="number" id="count" name="count" value="{{ word.count }}" required>
+            </div>
+            <div class="form-group">
+                <label for="concordance">Конкорданс:</label>
+                <textarea id="concordance" name="concordance">{{ word.concordance }}</textarea>
+            </div>
+            <button type="submit" class="button">Сохранить изменения</button>
+        </form>
+    </div>
+</body>
+</html>

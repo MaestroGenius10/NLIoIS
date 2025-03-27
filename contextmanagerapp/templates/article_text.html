@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Текст статьи: {{ article.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .meta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .meta-info p {
+            margin: 5px 0;
+        }
+        .article-text {
+            white-space: pre-wrap;  # Сохраняет форматирование текста
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ article.title }}</h1>
+
+        <!-- Метаинформация -->
+        <div class="meta-info">
+            <p><strong>Автор:</strong> {{ article.author }}</p>
+            <p><strong>Дата:</strong> {{ article.date|date:"Y-m-d H:i" }}</p>
+            <p><strong>Вид спорта:</strong> {{ article.sport }}</p>
+        </div>
+
+        <!-- Текст статьи -->
+        <div class="article-text">
+            {{ article.content }}
+        </div>
+
+        <!-- Кнопка для возврата к списку статей -->
+        <a href="{% url 'edit_article' article_id=article.id %}" class="button">Редактировать статью</a>
+        <a href="{% url 'view_articles' %}" class="button">Вернуться к списку статей</a>
+    </div>
+</body>
+</html>
