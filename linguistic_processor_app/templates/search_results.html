@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .sentence {
+            margin-bottom: 20px;
+        }
+        .token {
+            margin-left: 20px;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Результаты поиска</h1>
+        {% if sentences_data %}
+            {% for sentence_data in sentences_data %}
+                <div class="sentence">
+                    <strong>Предложение:</strong> {{ sentence_data.text }}
+                    <div class="tokens">
+                        {% for token in sentence_data.tokens %}
+                            <div class="token">
+                                <strong>Токен:</strong> {{ token.text }}
+                                <strong>Лемма:</strong> {{ token.lemma }}
+                                <strong>Часть речи:</strong> {{ token.pos }}
+                                <strong>Вид связи:</strong> {{ token.dep }}
+                                <strong>Главное слово:</strong> {{ token.head_text }}({{ token.head_pos }})
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Нет предложений, соответствующих критериям поиска.</p>
+        {% endif %}
+        <div>
+            <a href="{% url 'view_dictionary' %}" class="button">Вернуться в словарь</a>
+        </div>
+    </div>
+</body>
+</html>

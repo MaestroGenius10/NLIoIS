@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Словарь</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .sentence {
+            margin-bottom: 20px;
+        }
+        .token {
+            margin-left: 20px;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Словарь предложений</h1>
+        <form action="{% url 'search_sentences' %}" method="get">
+            <label for="pos">Часть речи:</label>
+            <select name="pos" id="pos">
+                <option value="">Выберите часть речи</option>
+                <option value="NOUN">NOUN</option>
+                <option value="VERB">VERB</option>
+                <option value="ADJ">ADJ</option>
+                <option value="ADV">ADV</option>
+                <option value="PRON">PRON</option>
+                <option value="DET">DET</option>
+                <option value="ADP">ADP</option>
+                <option value="AUX">AUX</option>
+                <option value="CONJ">CONJ</option>
+                <option value="INTJ">INTJ</option>
+                <option value="NUM">NUM</option>
+                <option value="PART">PART</option>
+                <option value="SCONJ">SCONJ</option>
+            </select>
+            <label for="dep">Роль:</label>
+            <select name="dep" id="dep">
+                <option value="">Выберите роль</option>
+                {% for key, value in translations.items %}
+                    <option value="{{ key }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="button">Поиск</button>
+        </form>
+        {% for sentence_data in sentences_data %}
+            <div class="sentence">
+                <strong>Предложение:</strong> {{ sentence_data.text }}
+                <div class="tokens">
+                    {% for token in sentence_data.tokens %}
+                        <div class="token">
+                            <strong>Токен:</strong> {{ token.text }}
+                            <strong>Лемма:</strong> {{ token.lemma }}
+                            <strong>Часть речи:</strong> {{ token.pos }}
+                            <strong>Вид связи:</strong> {{ token.dep }}
+                            <strong>Главное слово:</strong> {{ token.head_text }}({{ token.head_pos }})
+                        </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'view_syntax_tree' sentence_data.id %}" class="button">Построить синтаксическое дерево</a>
+                <a href="{% url 'edit_sentence' sentence_data.id %}" class="button">Редактировать информацию</a>
+            </div>
+        {% endfor %}
+        <div>
+            <a href="{% url 'upload_file' %}" class="button">Вернуться назад</a>
+        </div>
+    </div>
+</body>
+</html>
