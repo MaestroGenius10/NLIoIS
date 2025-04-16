@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лингвистический процессор - Загрузка файла</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --purple-color: #6f42c1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 8px 5px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .button-success {
+            background-color: var(--success-color);
+        }
+
+        .button-success:hover {
+            background-color: #218838;
+        }
+
+        .button-purple {
+            background-color: var(--purple-color);
+        }
+
+        .button-purple:hover {
+            background-color: #5a2d9e;
+        }
+
+        .file-input {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .file-input input[type="file"] {
+            display: none;
+        }
+
+        .file-input .upload-button {
+            padding: 14px 28px;
+            background-color: var(--success-color);
+            border-radius: 4px;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .file-input .upload-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .file-name {
+            margin-top: 15px;
+            font-size: 15px;
+            color: #666;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: inline-block;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .button-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .analysis-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--accent-color);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #555;
+            margin-bottom: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 15px;
+            }
+
+            .analysis-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .analysis-buttons .button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-buttons .button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать в лингвистический процессор!</h1>
+
+        <!-- Общая форма для загрузки файла -->
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Кнопка загрузки файла -->
+            <div class="file-input">
+                <label class="upload-button" for="file-upload">Выбрать файл для загрузки</label>
+                <input type="file" id="file-upload" name="file" accept=".txt" required onchange="handleFileSelect(this)">
+            </div>
+
+            <!-- Имя загруженного файла -->
+            <div class="file-name" id="file-name">{% if file_name %}Загруженный файл: {{ file_name }}{% else %}Файл не выбран{% endif %}</div>
+
+            <!-- Скрытое поле для текста -->
+            <input type="hidden" id="file-text" name="text" value="{{ file_text|default:'' }}">
+
+            <!-- Кнопки анализа -->
+            <div class="analysis-buttons">
+                <button type="submit" formaction="{% url 'analyze_file' %}" class="button">
+                    Синтаксический анализ
+                </button>
+                <button type="submit" formaction="{% url 'semantic_analyze_file' %}" class="button button-purple">
+                    Семантический анализ
+                </button>
+            </div>
+        </form>
+
+        <!-- Карточки возможностей -->
+        <div class="features">
+            <div class="feature-card">
+                <h3>Анализ текста</h3>
+                <p>Полный лингвистический анализ рецептов с разбивкой по частям речи и морфологическими признаками.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Фильтрация</h3>
+                <p>Поиск рецептов по различным критериям: названию, ингредиентам, времени приготовления.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Статистика</h3>
+                <p>Подробная статистика по всем рецептам с возможностью просмотра частотности слов.</p>
+            </div>
+        </div>
+
+        <!-- Навигационные кнопки -->
+        <div class="nav-buttons">
+            <form method="post" action="{% url 'view_dictionary' %}">
+                {% csrf_token %}
+                <button type="submit" class="button">Просмотреть словарь</button>
+            </form>
+            <form method="post" action="{% url 'all_semantic_analyses' %}">
+                {% csrf_token %}
+                <button type="submit" class="button button-purple">Словарь семантического анализа</button>
+            </form>
+            <button class="button" onclick="showHelp()">Помощь</button>
+        </div>
+    </div>
+
+    <script>
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById("file-text").value = e.target.result;
+                document.getElementById("file-name").textContent = "Загруженный файл: " + file.name;
+            };
+
+            reader.readAsText(file);
+        }
+
+        function showHelp() {
+            alert("Добро пожаловать в приложение для лингвистического анализа!\n\n" +
+                  "1. Загрузите текстовый файл (.txt) с рецептами\n" +
+                  "2. Выберите тип анализа (синтаксический или семантический)\n" +
+                  "3. Просматривайте результаты анализа в соответствующих разделах\n\n" +
+                  "Вы также можете просматривать сохраненные результаты в словарях.");
+        }
+    </script>
+</body>
+</html>

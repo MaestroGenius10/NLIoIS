@@ -1,0 +1,348 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: var(--danger-color);
+            font-size: 1.1em;
+            background-color: rgba(220, 53, 69, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .sentence {
+            padding: 20px;
+            margin-bottom: 25px;
+            background: var(--light-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .sentence:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .sentence strong {
+            color: var(--primary-color);
+        }
+
+        .tokens {
+            margin-top: 15px;
+        }
+
+        .token {
+            margin: 15px 0 0 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 3px solid var(--accent-color);
+            transition: all 0.2s ease;
+        }
+
+        .token:hover {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+        .token > div {
+            margin-bottom: 10px;
+        }
+
+        .semantic-block {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .semantic-block:hover {
+            background-color: #d4e6f1;
+        }
+
+        .semantic-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .semantic-title:before {
+            content: "•";
+            color: var(--accent-color);
+            font-size: 1.5em;
+            margin-right: 8px;
+        }
+
+        .definition {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+            border-left: 2px solid var(--accent-color);
+        }
+
+        .examples {
+            font-style: italic;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+            padding-left: 10px;
+            border-left: 2px solid #ccc;
+        }
+
+        .synonym-item, .relation-item {
+            display: inline-block;
+            background: #d4e6f1;
+            padding: 5px 12px;
+            margin: 4px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .synonym-item:hover, .relation-item:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .button-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 0 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .button-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .token {
+                margin-left: 10px;
+                padding: 12px;
+            }
+
+            .sentence {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Результаты поиска</h1>
+
+        {% if sentences_data %}
+            {% for sentence_data in sentences_data %}
+                <div class="sentence">
+                    <strong>Предложение:</strong> {{ sentence_data.text }}
+                    <div class="tokens">
+                        {% for token in sentence_data.tokens %}
+                            <div class="token">
+                                <div>
+                                    <strong>Токен:</strong> {{ token.text }}
+                                    <strong>Лемма:</strong> {{ token.lemma }}
+                                    <strong>Часть речи:</strong> {{ token.pos }}
+                                </div>
+                                <div>
+                                    <strong>Вид связи:</strong> {{ token.dep }}
+                                    <strong>Главное слово:</strong> {{ token.head_text }} ({{ token.head_pos }})
+                                </div>
+
+                                {% if token.definitions %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Определения</div>
+                                    {% for definition in token.definitions %}
+                                        <div class="definition">
+                                            {{ definition.definition|clean_wordnet }}
+                                            {% if definition.examples %}
+                                                <div class="examples">
+                                                    Примеры: {{ definition.examples|join:", "|clean_wordnet }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.synonyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Синонимы</div>
+                                    {% for synonym in token.synonyms %}
+                                        <span class="synonym-item">{{ synonym|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.antonyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Антонимы</div>
+                                    {% for ant in token.antonyms %}
+                                        <span class="synonym-item">{{ ant|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.hypernyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Более общие понятия</div>
+                                    {% for hypernym in token.hypernyms %}
+                                        <span class="relation-item">{{ hypernym|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.hyponyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Более конкретные понятия</div>
+                                    {% for hyponym in token.hyponyms %}
+                                        <span class="relation-item">{{ hyponym|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.holonyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Часть целого</div>
+                                    {% for holonym in token.holonyms %}
+                                        <span class="relation-item">{{ holonym|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.meronyms %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Составные части</div>
+                                    {% for meronym in token.meronyms %}
+                                        <span class="relation-item">{{ meronym|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.entailments %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Логические следствия</div>
+                                    {% for entailment in token.entailments %}
+                                        <span class="relation-item">{{ entailment|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.causes %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Причины</div>
+                                    {% for cause in token.causes %}
+                                        <span class="relation-item">{{ cause|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if token.also_sees %}
+                                <div class="semantic-block">
+                                    <div class="semantic-title">Связанные понятия</div>
+                                    {% for also_see in token.also_sees %}
+                                        <span class="relation-item">{{ also_see|clean_wordnet }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                Нет предложений, соответствующих критериям поиска
+            </div>
+        {% endif %}
+
+        <div class="button-container">
+            <a href="{% url 'view_dictionary' %}" class="button">Вернуться в словарь</a>
+        </div>
+    </div>
+</body>
+</html>
