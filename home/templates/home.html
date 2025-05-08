@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+    <button class="new-chat-btn" id="newChatBtn">+ Новый чат</button>
+    <div class="sidebar-header">Недавние чаты</div>
+    <div class="chat-list" id="chatList">
+        <!-- Чаты будут загружаться динамически -->
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="chat-container">
+        <div class="chat-history" id="chatHistory">
+            <!-- Сообщения будут загружаться динамически -->
+        </div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea class="chat-input" id="chatInput" rows="1" placeholder="Напишите ваш вопрос здесь..."></textarea>
+                <button class="send-btn" id="sendBtn" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/home/variables.js' %}"></script>
+<script src="{% static 'js/home/currentChat.js' %}"></script>
+<script src="{% static 'js/home/main.js' %}"></script>
+<script src="{% static 'js/home/chatList.js' %}"></script>
+</body>
+</html>
