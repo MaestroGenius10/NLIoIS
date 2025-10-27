@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ document.title }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .back-button { display: inline-block; margin-top: 20px; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.3s;}
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .meta {
+            font-size: 14px;
+            color: #777;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .legend span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .color-box {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        /* Подсветка разных типов совпадений */
+        mark.query { background-color: #fff176; }     /* основное слово — жёлтое */
+        mark.lemma { background-color: #a5d6a7; }     /* леммы — зелёные */
+        mark.synonym { background-color: #81d4fa; }   /* синонимы — голубые */
+
+        .text p {
+            line-height: 1.7;
+            margin: 12px 0;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ document.title }}</h1>
+        <div class="meta">
+            URL: <a href="{{ document.url }}" target="_blank">{{ document.url }}</a> | {{ document.length }} слов
+        </div>
+
+        {% if query %}
+        <div class="legend">
+            <span><span class="color-box" style="background:#fff176;"></span> Искомое слово</span>
+            <span><span class="color-box" style="background:#a5d6a7;"></span> Лемма</span>
+            <span><span class="color-box" style="background:#81d4fa;"></span> Синоним</span>
+        </div>
+        {% endif %}
+
+        <div class="text">
+            {{ highlighted_text|safe }}
+        </div>
+
+        {% if query %}
+            <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'home' %}{% endif %}" class="back-button">← Назад</a>
+        {% else %}
+            <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'home' %}{% endif %}" class="back-button">← Назад</a>
+        {% endif %}
+    </div>
+</body>
+</html>

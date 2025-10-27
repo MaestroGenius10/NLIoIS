@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+    <style>
+         .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .info-block {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px 20px;
+            margin-bottom: 25px;
+        }
+        .info-block p {
+            margin: 5px 0;
+            color: #444;
+            font-size: 15px;
+        }
+        .synonyms span {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #1a73e8;
+            border-radius: 20px;
+            padding: 5px 12px;
+            margin: 3px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .synonyms a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .synonyms a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .card a.title {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .card a.title:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            font-size: 14px;
+            color: #555;
+            margin: 5px 0 10px;
+        }
+        .snippet {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        /* Контейнер для кнопок */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Результаты поиска для "{{ query }}"</h1>
+
+        <div class="info-block">
+            {% if main_lemma %}
+                <p><b>Главная лемма:</b> {{ main_lemma }}</p>
+            {% endif %}
+
+            {% if synonyms %}
+                <p><b>Синонимы:</b></p>
+                <div class="synonyms">
+                    {% for s in synonyms %}
+                        <span><a href="{% url 'search_results' %}?q={{ s }}">{{ s }}</a></span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {% if results %}
+            {% for doc, score in results %}
+                <div class="card">
+                    <a class="title" href="{% url 'document_detail' doc.id %}?q={{ query }}">{{ doc.title }}</a>
+                    <div class="meta">
+                        URL: <a href="{{ doc.url }}" target="_blank">{{ doc.url }}</a> |
+                        Релевантность: {{ score|floatformat:3 }}
+                    </div>
+                    <div class="snippet">
+                        {% with doc.text|truncatewords:50 as snippet %}
+                            {{ snippet }}...
+                        {% endwith %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Документы не найдены.</p>
+        {% endif %}
+
+        <div class="buttons">
+            <a href="{% url 'home' %}" class="back-button">← Назад</a>
+            <a href="{% url 'metrics_view' %}" class="back-button">Просмотреть метрики</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты для "{{ query.query_text }}"</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+         .back-button { display: inline-block; margin-top: 20px; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.3s;}
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .meta {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .card a.title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .card a.title:hover {
+            text-decoration: underline;
+        }
+        .snippet {
+            margin-top: 10px;
+            font-size: 15px;
+            color: #444;
+        }
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Результаты для "{{ query.query_text }}"</h1>
+        <div class="meta">
+            Лемма: {{ query.main_lemma|default:"—" }} |
+            Синонимы:
+            {% if query.synonyms and query.synonyms|length > 0 %}
+                {{ query.synonyms|join:", " }}
+            {% else %}
+                —
+            {% endif %}
+        </div>
+
+        {% if results %}
+            {% for r in results %}
+                <div class="card">
+                    <a class="title" href="{% url 'document_detail' r.document.id %}?q={{ query.query_text }}">{{ r.document.title }}</a>
+                    <div class="snippet">{{ r.snippet|default:"(Фрагмент не сохранён)" }}</div>
+                    <div style="font-size:13px; color:#777;">Релевантность: {{ r.rank|floatformat:3 }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Результатов не найдено.</p>
+        {% endif %}
+
+         <a href="{% url 'home' %}" class="back-button">← Назад</a>
+    </div>
+</body>
+</html>

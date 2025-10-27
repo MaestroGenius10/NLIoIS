@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Информационно-поисковая система</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background:#f5f7fa; margin:0; padding:0; }
+        .search-container { max-width: 600px; margin:50px auto; padding:30px; background:white; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+        input[type="text"] { width:70%; padding:10px; border-radius:5px 0 0 5px; border:1px solid #ccc; font-size:16px;}
+        button { padding:10px 20px; border:none; font-size:16px; cursor:pointer; border-radius:5px; margin:10px; transition: background 0.3s;}
+        .auto-button { background: #28a745; color:white; }
+        .auto-button:hover { background: #218838; }
+        .manual-button { background: #007bff; color:white; }
+        .manual-button:hover { background: #0056b3; }
+        .view-button { background: #6c757d; color:white; }
+        .view-button:hover { background: #5a6268; }
+        .recommendations { margin-top: 20px; text-align: center; }
+        .recommendations button { background: #ffc107; color: #212529; font-size: 14px; margin: 5px; padding: 6px 12px; border-radius: 4px; }
+        .recommendations button:hover { background: #e0a800; }
+         .back-button { display: inline-block; margin-top: 20px; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.3s;}
+
+.back-button:hover {
+    background-color: #0056b3; /* темно-синий при наведении */
+}
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <!-- Поисковая форма -->
+        <form method="GET" action="{% url 'search_results' %}">
+            <input type="text" name="q" placeholder="Введите запрос..." required>
+            <button type="submit">🔍 Поиск</button>
+        </form>
+
+        <!-- Кнопки краулинга -->
+        <div>
+            <a href="{% url 'auto_crawl' %}">
+                <button type="button" class="auto-button">Автоматическое пополнение базы</button>
+            </a>
+            <a href="{% url 'manual_crawl' %}">
+                <button type="button" class="manual-button">Пополнить базу по ссылке</button>
+            </a>
+        </div>
+
+        <!-- Кнопка просмотра базы документов -->
+        <div>
+            <a href="{% url 'document_list' %}">
+                <button type="button" class="view-button">Просмотреть базу документов</button>
+            </a>
+        </div>
+
+         <div>
+            <a href="{% url 'search_history' %}">
+                <button type="button" class="view-button">Просмотреть историю поиска</button>
+            </a>
+        </div>
+
+         <div>
+            <a href="{% url 'help' %}">
+                <button type="button" class="view-button">Справка</button>
+            </a>
+        </div>
+
+        <!-- Рекомендации поиска -->
+        {% if recommended_words %}
+        <div class="recommendations">
+            <p>Попробуйте поискать:</p>
+            {% for word in recommended_words %}
+                <form method="get" action="{% url 'search_results' %}" style="display:inline;">
+                    <input type="hidden" name="q" value="{{ word }}">
+                    <button type="submit">{{ word }}</button>
+                </form>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

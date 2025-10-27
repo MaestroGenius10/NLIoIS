@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Краулинг по ссылке</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background:#f5f7fa; margin:0; padding:0; }
+        .container { max-width: 600px; margin:50px auto; padding:30px; background:white; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+        input[type="text"] { width:70%; padding:10px; border-radius:5px 0 0 5px; border:1px solid #ccc; font-size:16px;}
+        button { padding:10px 20px; border:none; background:#007bff; color:white; font-size:16px; cursor:pointer; border-radius:0 5px 5px 0; transition: background 0.3s;}
+        button:hover { background:#0056b3;}
+        .message { margin-top:20px; color:green;}
+        .back-button { display: inline-block; margin-top: 20px; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.3s;}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Пополнение базы по ссылке</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="user_url" placeholder="Вставьте ссылку" required>
+            <button type="submit">Пополнить базу</button>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>

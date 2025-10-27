@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>База документов</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .back-button { display: inline-block; margin-top: 20px; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; transition: background 0.3s;}
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .card a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Документы в базе</h1>
+        {% if documents %}
+            {% for doc in documents %}
+                <div class="card">
+                    <a href="{% url 'document_detail' doc.id %}">{{ doc.title }}</a>
+                    <div class="meta">
+                        {{ doc.url }} | {{ doc.length }} слов | Добавлен {{ doc.date_added|date:"Y-m-d H:i" }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Документы не найдены.</p>
+        {% endif %}
+        <a href="{% url 'home' %}" class="back-button">← Назад</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Метрики поиска</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            background: #fff;
+            max-width: 800px;
+            margin: auto;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 15px;
+        }
+        th {
+            background: #f9fafb;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f6faff;
+        }
+        .graph {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 10px 18px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: #b71c1c;
+            text-align: center;
+            font-size: 16px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% else %}
+            <h1>Метрики для запроса "{{ query }}"</h1>
+
+            <table>
+                <tr>
+                    <th>Название метрики</th>
+                    <th>Значение</th>
+                </tr>
+                {% for name, value in metrics %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ value|floatformat:4 }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <div class="graph">
+                <h2>График полноты/точности</h2>
+                <img src="data:image/png;base64,{{ graphic }}" alt="График TREC/RIRES">
+            </div>
+
+            <div style="text-align:center;">
+                <a href="{% url 'home' %}" class="back-button">← Назад</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
