@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2>{{ document.name }}</h2>
+    <p><strong>Дата загрузки:</strong> {{ document.upload_date }}</p>
+    <hr>
+    <h5>Текст документа:</h5>
+    <pre class="bg-white p-3 rounded shadow-sm" style="white-space: pre-wrap;">{{ document.text_content }}</pre>
+
+    <a href="{% url 'documents_list' %}" class="btn btn-primary mt-4">Вернуться к списку документов</a>
+</div>
+
+</body>
+</html>
