@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная — загрузка документов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 text-center">
+    <h2 class="mb-4">Приложение для автоматического реферирования документов</h2>
+
+    <!-- Форма загрузки файлов -->
+    <form method="post" enctype="multipart/form-data" class="d-inline-block p-4 bg-white rounded shadow-sm" action="{% url 'upload_document' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="file" name="source_file" class="form-control" multiple required>
+        </div>
+        <button type="submit" class="btn btn-primary px-4 py-2">Загрузить файлы</button>
+    </form>
+
+    <!-- Кнопки навигации -->
+    <div class="mt-4">
+        <a href="{% url 'documents_list' %}" class="btn btn-secondary px-4 py-2 mb-2">Просмотреть все документы</a>
+        <a href="{% url 'select_documents' %}" class="btn btn-warning px-4 py-2 mb-2">Провести реферирование документов</a>
+        <a href="{% url 'history_list' %}" class="btn btn-info px-4 py-2 mb-2">Просмотреть историю реферирования</a>
+        <a href="{% url 'help_page' %}" class="btn btn-info px-4 py-2 mb-2">Помощь</a>
+    </div>
+</div>
+
+<footer class="text-center text-muted py-3 mt-5 border-top">
+    <small>© 2025 Document Abstractor | БГУИР</small>
+</footer>
+
+</body>
+</html>

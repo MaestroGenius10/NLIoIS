@@ -1,0 +1,88 @@
+<!-- templates/referate_creator_app/download_report.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет по реферированию</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #444;
+            margin-top: 30px;
+        }
+        .document-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .report-section {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Сохраняет переносы строк */
+            font-family: 'Courier New', Courier, monospace;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #0056b3;
+            margin: 50px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Отчет по автоматическому реферированию</h1>
+
+        {% for doc in documents %}
+            <div class="document-block">
+                <h2>ДОКУМЕНТ: {{ doc.title }}</h2>
+                <p class="document-meta">Дата загрузки: {{ doc.upload_date|date:"d.m.Y H:i" }}</p>
+
+                <!-- ИЗМЕНЕНИЕ: Упрощенный вывод данных -->
+                <h3>Классический реферат (TF-IDF)</h3>
+                <div class="report-section">
+                    {{ doc.classic_summary_content }}
+                </div>
+
+                <h3>Реферат ключевых слов (Ollama)</h3>
+                <div class="report-section">
+                    {{ doc.keywords_summary_content }}
+                </div>
+
+                <h3>Полный текст документа</h3>
+                <div class="report-section">
+                    {{ doc.text_content }}
+                </div>
+            </div>
+
+            {% if not forloop.last %}
+                <hr>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>

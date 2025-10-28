@@ -1,0 +1,69 @@
+<!-- templates/referate_creator_app/history_list.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История реферирования</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center">История реферирования</h2>
+        <a href="{% url 'select_documents' %}" class="btn btn-primary">Новое реферирование</a>
+    </div>
+
+    {% for result in history_results %}
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ result.document.title }}</h4>
+                <small>Последнее обновление: {{ result.classic_summary.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+            <div class="card-body p-4">
+
+                <a class="btn btn-outline-secondary btn-sm mb-3" data-bs-toggle="collapse" href="#collapse-text-{{ result.document.id }}" role="button" aria-expanded="false" aria-controls="collapse-text-{{ result.document.id }}">
+                    Показать/скрыть полный текст документа
+                </a>
+                <div class="collapse" id="collapse-text-{{ result.document.id }}">
+                    <div class="card card-body bg-light p-3 mb-4">
+                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; font-size: 0.9em;">{{ result.document.text_content }}</pre>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Левая колонка: Классический реферат -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Классический реферат (TF-IDF)</h5>
+                        <div class="p-3 mb-3 bg-light border rounded" style="white-space: pre-wrap;">
+                           {{ result.classic_summary.content }}
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Ключевые слова -->
+                    <div class="col-md-6">
+                        <h5 class="text-success">Реферат ключевых слов (Ollama)</h5>
+                        <div class="p-3 bg-light border rounded" style="white-space: pre-wrap; font-family: monospace;">
+                            {{ result.keywords_formatted }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="text-center p-5 bg-white rounded shadow-sm">
+            <p class="text-muted fs-5">История реферирования пуста.</p>
+            <p>Чтобы начать, выберите и обработайте документы.</p>
+            <a href="{% url 'select_documents' %}" class="btn btn-primary mt-3">Выбрать документы</a>
+        </div>
+    {% endfor %}
+
+    <div class="text-center mt-4 mb-5">
+        <a href="/" class="btn btn-secondary">← Вернуться на главную</a>
+    </div>
+</div>
+
+</body>
+</html>

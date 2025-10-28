@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор документов для реферирования</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Выберите документы для реферирования</h2>
+
+    <form method="post" class="bg-white p-4 rounded shadow-sm">
+        {% csrf_token %}
+        {% if documents %}
+            <div class="mb-3">
+                {% for doc in documents %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="documents" value="{{ doc.id }}" id="doc{{ doc.id }}">
+                        <label class="form-check-label" for="doc{{ doc.id }}">
+                            {{ doc.title }} — загружен {{ doc.upload_date|date:"d.m.Y H:i" }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Провести реферирование</button>
+        {% else %}
+            <p class="text-center text-muted">Нет загруженных документов</p>
+        {% endif %}
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-secondary">Вернуться на главную</a>
+    </div>
+</div>
+
+</body>
+</html>

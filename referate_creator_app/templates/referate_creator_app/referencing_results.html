@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты реферирования</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Результаты автоматического реферирования</h2>
+
+    {% for result in results %}
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">{{ result.document.title }}</h4>
+            </div>
+            <div class="card-body p-4">
+
+                <a class="btn btn-outline-secondary btn-sm mb-3" data-bs-toggle="collapse" href="#collapse-text-{{ result.document.id }}" role="button" aria-expanded="false" aria-controls="collapse-text-{{ result.document.id }}">
+                    Показать/скрыть полный текст документа
+                </a>
+                <div class="collapse" id="collapse-text-{{ result.document.id }}">
+                    <div class="card card-body bg-light p-3 mb-4">
+                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; font-size: 0.9em;">{{ result.document.text_content }}</pre>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Классический реферат (TF-IDF)</h5>
+                        <p class="text-muted small">Предложения отсортированы по убыванию значимости (веса).</p>
+                        <div class="p-3 mb-3 bg-light border rounded">
+                            {% for item in result.classic_summary_sorted %}
+                                <p style="margin-bottom: 0.75rem;">
+                                    <span class="badge bg-primary rounded-pill me-2">{{ item.weight|floatformat:3 }}</span>
+                                    {{ item.text }}
+                                </p>
+                            {% empty %}
+                                <p class="mb-0">Не удалось составить реферат.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="text-success">Реферат ключевых слов (Ollama)</h5>
+                        <p class="text-muted small">Основные темы и понятия из текста.</p>
+                        <div class="p-3 bg-light border rounded" style="white-space: pre-wrap; font-family: monospace;">
+                            {{ result.keywords_formatted }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center text-muted">Нет данных для отображения.</p>
+    {% endfor %}
+
+    <!-- ИЗМЕНЕНИЕ: Добавлен блок с кнопками -->
+    <div class="text-center mt-4 mb-5">
+        <a href="{% url 'select_documents' %}" class="btn btn-secondary">← Назад к выбору документов</a>
+
+        <!-- ИЗМЕНЕНИЕ: Убираем параметр ?ids=... из ссылки -->
+        <a href="{% url 'download_report' %}" class="btn btn-success">📥 Скачать отчет в HTML</a>
+    </div>
+</div>
+
+</body>
+</html>
