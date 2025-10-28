@@ -1,0 +1,68 @@
+{% load dictionary_extras %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат перевода</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Результат перевода</h1>
+
+    <!-- Переведенный текст -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><h5>Перевод на русский язык</h5></div>
+        <div class="card-body" style="white-space: pre-wrap;">{{ target_doc.text }}</div>
+    </div>
+
+    <!-- Список слов -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5>Анализ слов (упорядочено по частоте)</h5>
+            <small class="text-muted">Количество переведенных (значимых) слов: {{ translated_word_count }}</small>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Английское слово</th>
+                            <th scope="col">Грам. инфо (EN)</th>
+                            <th scope="col">Перевод</th>
+                            <th scope="col">Грам. инфо (RU)</th>
+                            <th scope="col">Частота</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pair in word_pairs %}
+                    <tr>
+                        <td>{{ pair.source_word.word }}</td>
+                        <!-- ШАГ 2: ИСПРАВЛЯЕМ ФИЛЬТР ЗДЕСЬ -->
+                        <td>{{ pos_tags_desc|get:pair.source_word.pos }}</td>
+                        <td>{{ pair.target_word.word }}</td>
+                        <!-- И ЗДЕСЬ -->
+                        <td>{{ pos_tags_desc|get:pair.target_word.pos }}</td>
+                        <td><span class="badge bg-secondary">{{ pair.source_word.frequency }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted p-3">Значимые слова для анализа не найдены.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'index' %}" class="btn btn-primary btn-lg">На главную</a>
+    </div>
+</div>
+<footer class="text-center text-muted py-3 mt-5 border-top">
+    <small>© 2025 Система машинного перевода | БГУИР</small>
+</footer>
+</body>
+</html>
