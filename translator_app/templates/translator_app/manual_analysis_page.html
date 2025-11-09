@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анализ текста</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1>Анализ и перевод текста</h1>
+        <p class="lead text-muted">Введите текст на английском языке для анализа</p>
+    </div>
+    <form method="post" action="{% url 'manual_analysis_page' %}">
+        {% csrf_token %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <textarea name="source_text" class="form-control" rows="10" placeholder="Type or paste text here..."></textarea>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">Анализировать</button>
+            <a href="{% url 'index' %}" class="btn btn-secondary btn-lg px-4">Назад</a>
+        </div>
+    </form>
+</div>
+<footer class="text-center text-muted py-3 mt-5 border-top">
+    <small>© 2025 Система машинного перевода | БГУИР</small>
+</footer>
+</body>
+</html>

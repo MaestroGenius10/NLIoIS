@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Результат перевода</title>
+    <style>
+        body { background-color: #f8f9fa; }
+        .syntax-tree-container { border: 1px solid #dee2e6; border-radius: .375rem; padding: 1rem; overflow-x: auto; }
+    </style>
+</head>
+<body>
+<div class="container mt-5 mb-5">
+
+    <!-- === ДОБАВЛЕН ЗАГОЛОВОК С КНОПКОЙ "НА ГЛАВНУЮ" === -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="mb-0">Результат перевода</h1>
+        <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-home me-2"></i>На главную
+        </a>
+    </div>
+
+    <!-- КНОПКИ УПРАВЛЕНИЯ -->
+    <div class="my-4">
+        <a href="{% url 'download_result' source_doc.id %}" class="btn btn-primary"><i class="fas fa-download me-2"></i>Скачать отчет</a>
+        <button id="btn-tree-en" class="btn btn-outline-secondary"><i class="fas fa-sitemap me-2"></i>Построить дерево (EN)</button>
+        <button id="btn-tree-ru" class="btn btn-outline-secondary"><i class="fas fa-sitemap me-2"></i>Построить дерево (RU)</button>
+    </div>
+
+    <!-- ТЕКСТЫ -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Исходный документ: <strong>{{ source_doc.title }}</strong></div>
+                <div class="card-body" style="white-space: pre-wrap;">{{ source_doc.text }}</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Перевод: <strong>{{ target_doc.title }}</strong></div>
+                <div class="card-body" style="white-space: pre-wrap;">{{ target_doc.text }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- КОНТЕЙНЕРЫ ДЛЯ СИНТАКСИЧЕСКИХ ДЕРЕВЬЕВ -->
+    <div id="tree-container-en" class="mt-4" style="display: none;">
+        <h3>Синтаксическое дерево (EN)</h3>
+        <div class="syntax-tree-container"></div>
+    </div>
+    <div id="tree-container-ru" class="mt-4" style="display: none;">
+        <h3>Синтаксическое дерево (RU)</h3>
+        <div class="syntax-tree-container"></div>
+    </div>
+
+    <!-- СЛОВАРЬ ДЛЯ ДОКУМЕНТА -->
+    <div class="mt-5">
+        <h2>Словарь для этого документа ({{ translated_word_count }} пар)</h2>
+        <p>На основе слов, найденных в тексте, и данных из глобального словаря.</p>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Исходное слово (Лемма)</th>
+                    <th>Перевод (Лемма)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pair in word_map %}
+                <tr>
+                    <td>{{ pair.source_lemma.lemma }}</td>
+                    <td>{{ pair.target_lemma.lemma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center">Словарные пары для этого документа не найдены.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- === ДОБАВЛЕНА КНОПКА "НА ГЛАВНУЮ" ВНИЗУ СТРАНИЦЫ === -->
+    <div class="text-center mt-5">
+        <a href="{% url 'index' %}" class="btn btn-primary px-4">
+            <i class="fas fa-home me-2"></i>Вернуться на главную страницу
+        </a>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnTreeEn = document.getElementById('btn-tree-en');
+    const btnTreeRu = document.getElementById('btn-tree-ru');
+    const containerEn = document.getElementById('tree-container-en');
+    const containerRu = document.getElementById('tree-container-ru');
+    const treeContentEn = containerEn.querySelector('.syntax-tree-container');
+    const treeContentRu = containerRu.querySelector('.syntax-tree-container');
+
+    const docId = "{{ source_doc.id }}";
+
+    // Функция для загрузки и отображения дерева
+    async function showTree(lang, button, container, contentContainer) {
+        // Показываем контейнер и сообщение о загрузке
+        container.style.display = 'block';
+        contentContainer.innerHTML = '<p class="text-center text-muted">Загрузка дерева...</p>';
+        button.disabled = true;
+
+        try {
+            const response = await fetch(`/api/syntax-tree/${lang}/${docId}/`);
+            if (!response.ok) {
+                throw new Error('Ошибка сети или сервера.');
+            }
+            const data = await response.json();
+            contentContainer.innerHTML = data.tree_html;
+        } catch (error) {
+            contentContainer.innerHTML = `<p class="text-center text-danger">Не удалось построить дерево: ${error.message}</p>`;
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    btnTreeEn.addEventListener('click', () => showTree('en', btnTreeEn, containerEn, treeContentEn));
+    btnTreeRu.addEventListener('click', () => showTree('ru', btnTreeRu, containerRu, treeContentRu));
+});
+</script>
+</body>
+</html>

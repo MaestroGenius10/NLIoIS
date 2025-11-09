@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Обязательные мета-теги -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Подключение стилей Bootstrap через CDN для красивого оформления -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Подключение иконок Font Awesome через CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>Подтверждение перевода файлов</title>
+
+    <!-- Небольшой внутренний стиль для улучшения вида -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card-header h5 {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h1 class="mb-3">Анализ загруженных файлов</h1>
+        <p class="lead">Ниже представлена грамматическая информация для каждого из ваших файлов. Пожалуйста, проверьте ее и подтвердите перевод.</p>
+    </div>
+
+    {% if analyzed_files %}
+        {% for file_info in analyzed_files %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt text-secondary"></i> Файл: <strong>{{ file_info.filename }}</strong>
+                </h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Общее количество значимых слов:</strong> {{ file_info.total_word_count }}</p>
+                <h6>Грамматический состав:</h6>
+                <ul class="list-group">
+                    {% for pos, count in file_info.grammar_info.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ pos }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">Не удалось проанализировать состав.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="mt-4 pt-3 border-top text-center">
+            <form action="{% url 'execute_file_translation' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg px-5">
+                    <i class="fas fa-check-circle"></i> Подтвердить и перевести
+                </button>
+                <a href="{% url 'file_upload_page' %}" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="fas fa-arrow-left"></i> Вернуться назад
+                </a>
+            </form>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            <h4 class="alert-heading">Файлы не найдены</h4>
+            <p>Не найдено файлов для анализа. Пожалуйста, вернитесь на страницу загрузки и выберите один или несколько .txt файлов.</p>
+            <hr>
+            <a href="{% url 'file_upload_page' %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Перейти к загрузке
+            </a>
+             <a href="{% url 'file_upload_page' %}" class="btn btn-secondary btn-lg ms-2">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Опционально: можно добавить скрипты Bootstrap, если понадобится интерактивность -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+</body>
+</html>

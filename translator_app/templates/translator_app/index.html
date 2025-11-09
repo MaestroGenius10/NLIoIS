@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Нейросетевой переводчик</title>
+</head>
+<body>
+<div class="container d-flex flex-column justify-content-center" style="min-height: 100vh;">
+    <div class="text-center p-5 rounded-3 bg-light shadow-sm">
+        <h1 class="display-4">Нейросетевой переводчик</h1>
+        <p class="lead">
+            Интеллектуальная система для перевода текстов с расширенным лингвистическим анализом.
+        </p>
+        <hr class="my-4">
+        <p>Выберите способ для начала работы:</p>
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a class="btn btn-primary btn-lg" href="{% url 'manual_analysis_page' %}" role="button">
+                <i class="fas fa-keyboard me-2"></i>Ручной ввод
+            </a>
+            <a class="btn btn-success btn-lg" href="{% url 'file_upload_page' %}" role="button">
+                <i class="fas fa-file-upload me-2"></i>Загрузить файлы
+            </a>
+        </div>
+        <div class="mt-4">
+             <a class="btn btn-outline-info" href="{% url 'dictionary_list' %}" role="button">
+                <i class="fas fa-book me-2"></i>Глобальный словарь
+            </a>
+
+            <!-- === ДОБАВЛЕНА ССЫЛКА НА СТРАНИЦУ СПРАВКИ === -->
+            <a class="btn btn-outline-secondary" href="{% url 'help_page' %}" role="button">
+                <i class="fas fa-question-circle me-2"></i>Справка
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
