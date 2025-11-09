@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+<<<<<<< HEAD
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+=======
+
+>>>>>>> c1adf90499b34d168a9f38aafc3b62df98a7456a
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -128,5 +132,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+<<<<<<< HEAD
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+=======
+>>>>>>> c1adf90499b34d168a9f38aafc3b62df98a7456a
