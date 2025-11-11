@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>{{ title }}</title>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">{{ title }}</h1>
+
+    <div class="row g-4">
+        <!-- Блок для записи голоса с микрофона (НОВЫЙ) -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Вариант 1: Записать голос</h5>
+                    <p class="card-text text-muted">Нажмите "Начать запись", произнесите фразу, а затем "Остановить".</p>
+                    <div class="mt-auto text-center">
+                        <button class="btn btn-danger btn-lg" id="startRecordingBtn">
+                            <i class="fas fa-microphone-alt me-2"></i>Начать запись
+                        </button>
+                        <button class="btn btn-secondary btn-lg" id="stopRecordingBtn" disabled>
+                            <i class="fas fa-stop-circle me-2"></i>Остановить
+                        </button>
+                        <div id="status" class="mt-3 text-muted">Нажмите, чтобы начать запись...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Форма для загрузки файла (СТАРАЯ) -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Вариант 2: Загрузить файл</h5>
+                    <p class="card-text text-muted">Поддерживаются форматы MP3, WAV, M4A и другие.</p>
+                    <form method="POST" enctype="multipart/form-data" class="mt-auto">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="audio_file" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-upload me-2"></i>Распознать файл
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Блок для отображения результата -->
+    <div id="result-container" class="mt-5">
+    {% if recognition_result %}
+        <div class="card">
+            <div class="card-header">
+                Результат обработки файла: <strong>{{ recognition_result.uploaded_audio_file.name|cut:"uploads/" }}</strong>
+            </div>
+            <div class="card-body">
+                {% if recognition_result.status == 'COMPLETED' %}
+                    <h5 class="card-title">Распознанный текст:</h5>
+                    <blockquote class="blockquote">
+                        <p class="fst-italic">"{{ recognition_result.recognized_text }}"</p>
+                    </blockquote>
+                    <p class="mt-3">
+                        <a href="{% url 'recognition_history' %}" class="btn btn-success">
+                            <i class="fas fa-history me-2"></i>Перейти в историю распознаваний
+                        </a>
+                    </p>
+                {% elif recognition_result.status == 'FAILED' %}
+                    <div class="alert alert-danger">
+                        <strong>Ошибка распознавания:</strong>
+                        <p>{{ recognition_result.error_message }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    </div>
+
+    <!-- Отображение ошибок, не связанных с результатом -->
+    {% if error_message %}
+        <div class="alert alert-danger mt-4">{{ error_message }}</div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'index' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>На главную
+        </a>
+        <a href="{% url 'recognition_history' %}" class="btn btn-outline-secondary ms-2">
+           <i class="fas fa-history me-2"></i>История распознаваний
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const startBtn = document.getElementById('startRecordingBtn');
+    const stopBtn = document.getElementById('stopRecordingBtn');
+    const statusDiv = document.getElementById('status');
+    const resultContainer = document.getElementById('result-container');
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    // Проверяем, поддерживает ли браузер запись
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusDiv.textContent = 'Ваш браузер не поддерживает запись аудио.';
+        startBtn.disabled = true;
+        return;
+    }
+
+    // --- Логика начала записи ---
+    startBtn.addEventListener('click', async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = []; // Очищаем массив перед новой записью
+
+            // Собираем кусочки аудио в массив
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            // Когда запись остановлена, собираем всё в один файл и отправляем
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                sendAudioToServer(audioBlob);
+                // Освобождаем микрофон
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+
+            // Обновляем интерфейс
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            statusDiv.textContent = 'Идёт запись... Говорите в микрофон.';
+            statusDiv.classList.add('text-danger');
+
+        } catch (err) {
+            console.error("Ошибка доступа к микрофону:", err);
+            statusDiv.textContent = 'Ошибка: Не удалось получить доступ к микрофону.';
+        }
+    });
+
+    // --- Логика остановки записи ---
+    stopBtn.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+
+            // Обновляем интерфейс
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            statusDiv.textContent = 'Обработка записи... Пожалуйста, подождите.';
+            statusDiv.classList.remove('text-danger');
+        }
+    });
+
+    // --- Функция отправки аудио на сервер ---
+    async function sendAudioToServer(blob) {
+        const formData = new FormData();
+        // Добавляем наш аудио-blob как файл.
+        // Имя 'audio_file' должно совпадать с тем, что ожидает view (`request.FILES.get('audio_file')`)
+        formData.append('audio_file', blob, 'recording.webm');
+
+        // Получаем CSRF-токен из формы
+        const csrfToken = document.querySelector('form [name=csrfmiddlewaretoken]').value;
+
+        try {
+            const response = await fetch("{% url 'recognize_speech' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                // Сервер отвечает целой HTML-страницей с результатом.
+                // Мы просто заменяем текущее содержимое страницы на новое.
+                const htmlResult = await response.text();
+                document.body.innerHTML = htmlResult;
+            } else {
+                statusDiv.textContent = `Ошибка сервера: ${response.statusText}`;
+            }
+        } catch (error) {
+            console.error('Ошибка отправки аудио:', error);
+            statusDiv.textContent = 'Произошла ошибка при отправке аудио на сервер.';
+        }
+    }
+});
+</script>
+</body>
+</html>

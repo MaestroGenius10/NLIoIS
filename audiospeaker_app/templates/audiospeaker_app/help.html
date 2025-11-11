@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <h1 class="mb-4">{{ title }}</h1>
+
+        <!-- ======================= БЛОК 1: ОПИСАНИЕ ПРОГРАММЫ ======================= -->
+        <div class="p-4 mb-5 bg-light rounded-3 shadow-sm">
+            <h2 class="display-6">О приложении</h2>
+            <p class="lead">
+                Это веб-приложение для синтеза речи, построенное на фреймворке Django и использующее передовые технологии от <strong>ElevenLabs</strong>.
+            </p>
+            <hr class="my-4">
+            <p><strong>Основные возможности:</strong></p>
+            <ul>
+                <li><strong>Преобразование текста в речь:</strong> Введите любой текст и получите качественную аудиодорожку.</li>
+                <li><strong>Выбор голосов:</strong> Используйте один из множества предустановленных голосов с разными акцентами и характеристиками.</li>
+                <li><strong>Тонкая настройка:</strong> Управляйте параметрами речи, такими как стабильность и сходство, для достижения идеального результата.</li>
+                <li><strong>История запросов:</strong> Все ваши озвученные тексты сохраняются в истории, где их можно прослушать в любое время.</li>
+            </ul>
+        </div>
+        <!-- ======================================================================== -->
+
+        <!-- ======================= БЛОК 2: ОПИСАНИЕ НАСТРОЕК ======================= -->
+        <div class="mb-5">
+            <h2>Описание настроек</h2>
+            <p>Эти параметры позволяют вам влиять на стиль и качество генерируемой речи.</p>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Стабильность (Stability)</h4>
+                            <p class="card-text">
+                                Этот ползунок контролирует баланс между "ясностью" и "эмоциональностью" речи.
+                            </p>
+                            <ul>
+                                <li><strong>Низкие значения (ближе к 0):</strong> Речь становится более выразительной и эмоциональной, но может потерять в стабильности и предсказуемости. В крайних случаях голос может "заикаться".</li>
+                                <li><strong>Высокие значения (ближе к 1):</strong> Речь становится более предсказуемой, ровной и монотонной. Идеально подходит для озвучивания новостей или аудиокниг.</li>
+                            </ul>
+                            <p class="card-text"><small class="text-muted">Рекомендуется начинать со значения 0.75 и корректировать по вкусу.</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Усиление сходства (Similarity Boost)</h4>
+                            <p class="card-text">
+                                Этот параметр определяет, насколько сильно сгенерированная речь должна походить на оригинальный голос.
+                            </p>
+                            <ul>
+                                <li><strong>Низкие значения (ближе к 0):</strong> Модель получает больше "творческой свободы". Голос может немного отличаться от оригинала, но при этом звучать более естественно для конкретного текста.</li>
+                                <li><strong>Высокие значения (ближе к 1):</strong> Модель будет строго придерживаться характеристик исходного голоса. Это может привести к появлению артефактов, если текст не соответствует обычному стилю голоса.</li>
+                            </ul>
+                            <p class="card-text"><small class="text-muted">Значение 0.75 обычно является хорошим балансом.</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ======================================================================== -->
+
+        <h2 class="mb-3">Список доступных голосов</h2>
+
+        {% if error_message %}
+            <div class="alert alert-warning" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        {% if voices_info %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Имя голоса</th>
+                            <th scope="col">Описание на русском</th>
+                            <th scope="col">Категория</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for voice in voices_info %}
+                            <tr>
+                                <td class="fw-bold">{{ voice.name }}</td>
+                                <td>{{ voice.description }}</td>
+                                <td><span class="badge bg-secondary">{{ voice.category }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+             {% if not error_message %}
+                <div class="alert alert-info" role="alert">
+                    Информация о голосах не найдена.
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <a href="{% url 'index' %}" class="btn btn-secondary mt-4">
+            <i class="fas fa-arrow-left me-2"></i>На главную
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
